@@ -27,7 +27,7 @@ import { useUserStore } from "../utils/stores/userStore"
 
 const formSchema = z.object({
     pin: z.string().min(4).max(4, {
-      message: "pin must be at least 4 characters.",
+      message: "pin must be 4 characters.",
     }),
   })
 
@@ -72,7 +72,7 @@ export default function EnterPin() {
             <FormItem>
               {/* <FormLabel>Username</FormLabel> */}
               <FormControl>
-                <Input placeholder="pin" {...field} />
+                <Input placeholder="Pin" {...field} />
               </FormControl>
               {/* <FormDescription>
                 This is your organisation pin
@@ -81,7 +81,7 @@ export default function EnterPin() {
             </FormItem>
           )}
         />
-        <Button type="submit">Login In</Button>
+        <Button type="submit">Login</Button>
       </form>
     </Form>
       </div>

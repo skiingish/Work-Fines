@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { ModeToggle } from '@/components/ui/ModeToggle'
 import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
+import SubmitFine from '@/components/SubmitFine';
 
 
 export default function Index() {
@@ -26,7 +27,7 @@ export default function Index() {
         <Header />
         <main className='flex-1 flex flex-col'>
           <div className='text-center'>
-            {/* <EnterPin /> */}
+            <SubmitFine />
           </div>
         </main>
       </div>
