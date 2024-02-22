@@ -4,6 +4,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from 'react';
+import { CheckIcon, CaretSortIcon } from '@radix-ui/react-icons'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +16,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
+  import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+  } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
+import { cn } from '@/lib/utils';
 import { submitFine } from '@/app/actions/submitFine';
 import { useUserStore } from "../utils/stores/userStore"
 import { createClient } from "@/utils/supabase/client";
@@ -83,6 +97,8 @@ export default function SubmitFine() {
                 return;
             }
 
+            console.log(staff)
+
             setStaffList(staff);
         }
 
@@ -99,6 +115,7 @@ export default function SubmitFine() {
                 return;
             }
 
+            console.log(fineTypes)
             setFineTypesList(fineTypes);
         }
 
@@ -194,13 +211,61 @@ export default function SubmitFine() {
           control={form.control}
           name="reported_by"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>Reported By</FormLabel>
-              <FormControl>
-                <Input placeholder="Steve" {...field} />
-              </FormControl>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? staffList.find(
+                            (staff) => staff.value === field.value
+                          )?.name
+                        : "Select Yourself"}
+                      {/* <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" /> */}
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search Staff"
+                      className="h-9"
+                    />
+                    <CommandEmpty>No matching person found</CommandEmpty>
+                    <CommandGroup>
+                      {staffList.map((staff) => (
+                        <CommandItem
+                          value={staff.name}
+                          key={staff.id}
+                          onSelect={() => {
+                            form.setValue("reported_by", staff.id)
+                          }}
+                        >
+                          {staff.name}
+                          {/* <CheckIcon
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              language.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          /> */}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormDescription>
-                Your Name
+                Whats your name?
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -210,11 +275,59 @@ export default function SubmitFine() {
           control={form.control}
           name="who"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>Who</FormLabel>
-              <FormControl>
-                <Input placeholder="Steve" {...field} />
-              </FormControl>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? staffList.find(
+                            (staff) => staff.value === field.value
+                          )?.name
+                        : "Select Person"}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search Staff"
+                      className="h-9"
+                    />
+                    <CommandEmpty>No matching person found</CommandEmpty>
+                    <CommandGroup>
+                      {staffList.map((staff) => (
+                        <CommandItem
+                          value={staff.name}
+                          key={staff.id}
+                          onSelect={() => {
+                            form.setValue("who", staff.id)
+                          }}
+                        >
+                          {staff.name}
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              staff.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormDescription>
                 Who are you fining?
               </FormDescription>
@@ -226,11 +339,59 @@ export default function SubmitFine() {
           control={form.control}
           name="what"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>What For</FormLabel>
-              <FormControl>
-                <Input placeholder="Being Late" {...field} />
-              </FormControl>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? fineTypesList.find(
+                            (fine) => fine.value === field.value
+                          )?.name
+                        : "Select Fine"}
+                      {/* <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" /> */}
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search fines"
+                      className="h-9"
+                    />
+                    <CommandEmpty>No matching fine found</CommandEmpty>
+                    <CommandGroup>
+                      {fineTypesList.map((fine) => (
+                        <CommandItem
+                          value={fine.name}
+                          key={fine.id}
+                          onSelect={() => {
+                            form.setValue("what", fine.id)
+                          }}
+                        >
+                          {fine.name}
+                          {/* <CheckIcon
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              language.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          /> */}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormDescription>
                 What did they do?
               </FormDescription>
