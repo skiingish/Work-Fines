@@ -44,15 +44,22 @@ import { createClient } from "@/utils/supabase/client";
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_MEDIA_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
+const languages = [
+  { label: "English", value: "en" },
+  { label: "French", value: "fr" },
+  { label: "German", value: "de" },
+  { label: "Spanish", value: "es" },
+  { label: "Portuguese", value: "pt" },
+  { label: "Russian", value: "ru" },
+  { label: "Japanese", value: "ja" },
+  { label: "Korean", value: "ko" },
+  { label: "Chinese", value: "zh" },
+] as const
 
 
 const formSchema = z.object({
-    reported_by: z.string().min(2).max(30, {
-      message: "name must be at least 2 characters.",
-    }),
-    who: z.string().min(2).max(30, {
-        message: "name must be at least 2 characters.",
-    }),
+    reported_by: z.string({required_error: "Please select a staff member."}),
+    who: z.string({required_error: "Please select a staff member."}),
     what: z.string().min(2).max(100, {
         message: "fine must be at least 2 characters.",
     }),
@@ -97,7 +104,12 @@ export default function SubmitFine() {
                 return;
             }
 
-            console.log(staff)
+            // remap to match id => value, name => label
+            staff.forEach((s) => {
+                s.id = s.id.toString();
+                s.value = s.id;
+                s.label = s.name;
+            });
 
             setStaffList(staff);
         }
@@ -115,7 +127,12 @@ export default function SubmitFine() {
                 return;
             }
 
-            console.log(fineTypes)
+            fineTypes.forEach((f) => {
+                f.id = f.id.toString();
+                f.value = f.id;
+                f.label = f.name;
+            });
+
             setFineTypesList(fineTypes);
         }
 
@@ -126,8 +143,6 @@ export default function SubmitFine() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-          reported_by: "",
-            who: "",
             what: "",
             penalty_amount: 0,
             
@@ -220,20 +235,20 @@ export default function SubmitFine() {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
+                        "justify-between",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value
                         ? staffList.find(
                             (staff) => staff.value === field.value
-                          )?.name
+                          )?.label
                         : "Select Yourself"}
-                      {/* <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" /> */}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className="p-0">
                   <Command>
                     <CommandInput
                       placeholder="Search Staff"
@@ -243,21 +258,21 @@ export default function SubmitFine() {
                     <CommandGroup>
                       {staffList.map((staff) => (
                         <CommandItem
-                          value={staff.name}
-                          key={staff.id}
+                          value={staff.label}
+                          key={staff.value}
                           onSelect={() => {
-                            form.setValue("reported_by", staff.id)
+                            form.setValue("reported_by", staff.value)
                           }}
                         >
-                          {staff.name}
-                          {/* <CheckIcon
+                          {staff.label}
+                          <CheckIcon
                             className={cn(
                               "ml-auto h-4 w-4",
-                              language.value === field.value
+                              staff.value === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
-                          /> */}
+                          />
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -284,20 +299,20 @@ export default function SubmitFine() {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
+                        "justify-between",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value
                         ? staffList.find(
                             (staff) => staff.value === field.value
-                          )?.name
+                          )?.label
                         : "Select Person"}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className=" p-0">
                   <Command>
                     <CommandInput
                       placeholder="Search Staff"
@@ -307,10 +322,10 @@ export default function SubmitFine() {
                     <CommandGroup>
                       {staffList.map((staff) => (
                         <CommandItem
-                          value={staff.name}
-                          key={staff.id}
+                          value={staff.label}
+                          key={staff.value}
                           onSelect={() => {
-                            form.setValue("who", staff.id)
+                            form.setValue("who", staff.value)
                           }}
                         >
                           {staff.name}
@@ -348,20 +363,20 @@ export default function SubmitFine() {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
+                        "justify-between",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value
                         ? fineTypesList.find(
                             (fine) => fine.value === field.value
-                          )?.name
+                          )?.label
                         : "Select Fine"}
-                      {/* <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" /> */}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className="p-0">
                   <Command>
                     <CommandInput
                       placeholder="Search fines"
@@ -371,21 +386,21 @@ export default function SubmitFine() {
                     <CommandGroup>
                       {fineTypesList.map((fine) => (
                         <CommandItem
-                          value={fine.name}
-                          key={fine.id}
+                          value={fine.label}
+                          key={fine.value}
                           onSelect={() => {
-                            form.setValue("what", fine.id)
+                            form.setValue("what", fine.value)
                           }}
                         >
-                          {fine.name}
-                          {/* <CheckIcon
+                          {fine.label}
+                          <CheckIcon
                             className={cn(
                               "ml-auto h-4 w-4",
-                              language.value === field.value
+                              fine.value === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
-                          /> */}
+                          />
                         </CommandItem>
                       ))}
                     </CommandGroup>
