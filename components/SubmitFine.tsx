@@ -44,25 +44,11 @@ import { createClient } from "@/utils/supabase/client";
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_MEDIA_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-const languages = [
-  { label: "English", value: "en" },
-  { label: "French", value: "fr" },
-  { label: "German", value: "de" },
-  { label: "Spanish", value: "es" },
-  { label: "Portuguese", value: "pt" },
-  { label: "Russian", value: "ru" },
-  { label: "Japanese", value: "ja" },
-  { label: "Korean", value: "ko" },
-  { label: "Chinese", value: "zh" },
-] as const
-
 
 const formSchema = z.object({
     reported_by: z.string({required_error: "Please select a staff member."}),
     who: z.string({required_error: "Please select a staff member."}),
-    what: z.string().min(2).max(100, {
-        message: "fine must be at least 2 characters.",
-    }),
+    what: z.string({required_error: "Please select a fine."}),
     penalty_amount: z.coerce.number().min(1 ,{
         message: "name must be at least 2 characters.",
     }),
@@ -187,16 +173,30 @@ export default function SubmitFine() {
                 return;
             }
 
+            console.log(dataPackage.what, fineTypesList, parseInt(dataPackage.what));
+
+            // Get the fine type name from it's passed id
+            const fineTypeName = fineTypesList.find((fine) => fine.value === dataPackage.what)?.label;
+            const personFinedName = staffList.find((staff) => staff.value === dataPackage.who)?.label;
+
+
             // Create a new fine in the fines table
             const { data: fine, error: fineError } = await supabase.from('fines').insert({
-                reported_by: dataPackage.reported_by,
-                who: dataPackage.who,
-                what: dataPackage.what,
+                reported_by: parseInt(dataPackage.reported_by),
+                who: personFinedName,
+                what: fineTypeName,
                 penalty_amount: dataPackage.penalty_amount,
                 media_url: filePath,
                 organisation_id: user?.organisation,
-                staff_id: 1
+                staff_id: parseInt(dataPackage.who)
             });
+
+            if (fineError) {
+                console.log(fineError);
+                return;
+            }
+
+            console.log(fine);
         }
         
         console.log(result, error)
@@ -414,6 +414,8 @@ export default function SubmitFine() {
             </FormItem>
           )}
         />
+        {/* <label htmlFor='custom_fine_cb'>Custom Fine</label>
+        <Input className='h-6' type='checkbox' name='custom_fine_cb'/> */}
         <FormField
           control={form.control}
           name="penalty_amount"
@@ -421,7 +423,7 @@ export default function SubmitFine() {
             <FormItem>
               <FormLabel>Amount</FormLabel>
               <FormControl>
-                <Input placeholder="1" type='number' {...field} />
+                <Input placeholder="1" type='number'  {...field}  />
               </FormControl>
               <FormDescription>
                 How many?
