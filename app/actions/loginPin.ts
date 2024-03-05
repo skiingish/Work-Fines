@@ -29,7 +29,7 @@ export async function loginPin(data: any) {
     if (!user || user.length === 0) {
       return {
         status: "error",
-        message: `Invalid pin`,
+        message: `Invalid pin entered ${hashedPin}`,
       };
     } 
     
