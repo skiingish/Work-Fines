@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
 import Navbar from '@/components/Navbar';

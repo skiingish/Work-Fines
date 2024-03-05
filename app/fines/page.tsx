@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ModeToggle } from '@/components/ui/ModeToggle';
 import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
