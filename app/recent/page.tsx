@@ -1,17 +1,17 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
 import RecentFinesTable from '@/components/RecentFinesTable';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function Index() {
+  const router = useRouter();
+
   const user = useUserStore((state) => state.user);
   console.log(user);
 
   if (!user) {
-    const router = useRouter();
     router.push('/enter-pin');
   }
 
