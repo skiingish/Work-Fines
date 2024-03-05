@@ -42,13 +42,10 @@ import { toast } from 'sonner';
 //     }),
 // });
 
-const MAX_FILE_SIZE = 500000;
-const ACCEPTED_MEDIA_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-];
+const MAX_FILE_SIZE_MB = 500000;
+const validExtensions = ['jpeg', 'jpg', 'png', 'webp'];
+
+const toMb = (bytes: number) => bytes / 1024 / 1024;
 
 //media: z.custom<File>(),
 //   media: z
@@ -68,7 +65,36 @@ export default function SubmitFine() {
     penalty_amount: z.coerce.number().min(1, {
       message: 'name must be at least 2 characters.',
     }),
-    media: z.instanceof(FileList).optional(),
+    media: z
+      .unknown()
+      .transform((value) => {
+        return value as FileList | null | undefined;
+      })
+      .transform((value) => value?.item(0))
+      .refine(
+        (file) => {
+          if (!file) {
+            return true;
+          }
+
+          const fileExtension = file.name.split('.').pop();
+
+          return !!fileExtension && validExtensions.includes(fileExtension);
+        },
+        { message: `Valid types: ${validExtensions}` }
+      )
+      .refine(
+        (file) => {
+          if (!file) {
+            return true;
+          }
+
+          return toMb(file.size) <= MAX_FILE_SIZE_MB;
+        },
+        {
+          message: `File size must be less than ${MAX_FILE_SIZE_MB}MB`,
+        }
+      ),
   });
 
   const router = useRouter();
@@ -152,7 +178,7 @@ export default function SubmitFine() {
 
       const dataPackage = {
         ...data,
-        media: data?.media ? [data?.media[0]] : undefined,
+        media: data?.media ? [data?.media as unknown as File] : undefined,
       };
 
       const { data: result, error } = await supabase
