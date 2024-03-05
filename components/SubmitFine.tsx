@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -61,6 +61,9 @@ const ACCEPTED_MEDIA_TYPES = [
 //     ),
 
 export default function SubmitFine() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const formSchema = z.object({
     reported_by: z.string({ required_error: 'Please select a staff member.' }),
     who: z.string({ required_error: 'Please select a staff member.' }),
@@ -71,8 +74,6 @@ export default function SubmitFine() {
     media: z.instanceof(FileList).optional(),
   });
 
-  const router = useRouter();
-  const supabase = createClient();
   const user = useUserStore((state) => state.user);
 
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/utils/stores/userStore';
 import RecentFinesTable from '@/components/RecentFinesTable';
@@ -11,9 +12,13 @@ export default function Index() {
   const user = useUserStore((state) => state.user);
   console.log(user);
 
-  if (!user) {
-    router.push('/enter-pin');
-  }
+  useEffect(() => {
+    console.log(user);
+
+    if (!user) {
+      router.replace('/enter-pin');
+    }
+  }, []);
 
   return (
     <div className='flex-1 w-full flex flex-col gap-20 items-center'>

@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ModeToggle } from '@/components/ui/ModeToggle';
 import Header from '@/components/Header';
@@ -7,13 +8,17 @@ import SubmitFine from '@/components/SubmitFine';
 import Navbar from '@/components/Navbar';
 
 export default function Index() {
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   console.log(user);
 
-  if (!user) {
-    const router = useRouter();
-    router.push('/enter-pin');
-  }
+  useEffect(() => {
+    console.log(user);
+
+    if (!user) {
+      router.replace('/enter-pin');
+    }
+  }, []);
 
   return (
     <div className='flex-1 w-full flex flex-col gap-20 items-center'>
