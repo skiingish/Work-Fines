@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
@@ -103,6 +103,10 @@ export default function SubmitFine() {
   const user = useUserStore((state) => state.user);
 
   const [loading, setLoading] = useState(false);
+  const [reportByPopOverOpen, setReportByPopOverOpen] = useState(false);
+  const [whoPopoverOpen, setWhoPopoverOpen] = useState(false);
+  const [forPopoverOpen, setForPopoverOpen] = useState(false);
+
   const [staffList, setStaffList] = useState<any[]>([]);
   const [fineTypesList, setFineTypesList] = useState<any[]>([]);
 
@@ -271,12 +275,16 @@ export default function SubmitFine() {
             render={({ field }) => (
               <FormItem className='flex flex-col'>
                 <FormLabel>Reported By</FormLabel>
-                <Popover>
+                <Popover
+                  open={reportByPopOverOpen}
+                  onOpenChange={setReportByPopOverOpen}
+                >
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant='outline'
                         role='combobox'
+                        aria-expanded={reportByPopOverOpen}
                         className={cn(
                           'justify-between',
                           !field.value && 'text-muted-foreground'
@@ -305,6 +313,7 @@ export default function SubmitFine() {
                             key={staff.value}
                             onSelect={() => {
                               form.setValue('reported_by', staff.value);
+                              setReportByPopOverOpen(false);
                             }}
                           >
                             {staff.label}
@@ -333,7 +342,7 @@ export default function SubmitFine() {
             render={({ field }) => (
               <FormItem className='flex flex-col'>
                 <FormLabel>Who</FormLabel>
-                <Popover>
+                <Popover open={whoPopoverOpen} onOpenChange={setWhoPopoverOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -367,6 +376,7 @@ export default function SubmitFine() {
                             key={staff.value}
                             onSelect={() => {
                               form.setValue('who', staff.value);
+                              setWhoPopoverOpen(false);
                             }}
                           >
                             {staff.name}
@@ -395,7 +405,7 @@ export default function SubmitFine() {
             render={({ field }) => (
               <FormItem className='flex flex-col'>
                 <FormLabel>What For</FormLabel>
-                <Popover>
+                <Popover open={forPopoverOpen} onOpenChange={setForPopoverOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -429,6 +439,7 @@ export default function SubmitFine() {
                             key={fine.value}
                             onSelect={() => {
                               form.setValue('what', fine.value);
+                              setForPopoverOpen(false);
                             }}
                           >
                             {fine.label}
