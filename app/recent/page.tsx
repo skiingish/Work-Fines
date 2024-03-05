@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
 import RecentFinesTable from '@/components/RecentFinesTable';
