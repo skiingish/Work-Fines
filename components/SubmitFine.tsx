@@ -61,9 +61,6 @@ const ACCEPTED_MEDIA_TYPES = [
 //     ),
 
 export default function SubmitFine() {
-  const router = useRouter();
-  const supabase = createClient();
-
   const formSchema = z.object({
     reported_by: z.string({ required_error: 'Please select a staff member.' }),
     who: z.string({ required_error: 'Please select a staff member.' }),
@@ -73,6 +70,9 @@ export default function SubmitFine() {
     }),
     media: z.instanceof(FileList).optional(),
   });
+
+  const router = useRouter();
+  const supabase = createClient();
 
   const user = useUserStore((state) => state.user);
 
