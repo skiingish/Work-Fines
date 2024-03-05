@@ -2,6 +2,7 @@ import { ModeToggle } from '@/components/ui/ModeToggle';
 import AuthButton from '../components/AuthButton';
 import Header from '@/components/Header';
 import EnterPin from '@/components/EnterPin';
+import Footer from '@/components/Footer';
 
 export default async function Index() {
   return (
@@ -22,9 +23,7 @@ export default async function Index() {
         </main>
       </div>
 
-      <footer className='w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs'>
-        <p>By Sean Builds Things.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

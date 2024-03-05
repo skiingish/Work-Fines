@@ -14,7 +14,18 @@ type Fine = {
     who: string;
     what: string;
     penalty_amount: number;
-    media_url: string;
+    media_url?: string;
     organisation: number;
     staff_id: number;
+    staff?: BasicUser;
+};
+
+type Staff = {
+    id: number;
+    created_at: Date;
+    name: string;
+    fines_owed: number;
+    fines_paid: number;
+    fines_outstanding?: number;
+    organisation: number;
 };

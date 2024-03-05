@@ -1,6 +1,8 @@
 import { GeistSans } from 'geist/font/sans';
 import './globals.css';
 import { ThemeProvider } from '@/components/ui/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
+import 'react-photo-view/dist/react-photo-view.css';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,6 +31,7 @@ export default function RootLayout({
           <main className='min-h-screen flex flex-col items-center'>
             {children}
           </main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

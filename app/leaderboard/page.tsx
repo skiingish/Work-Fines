@@ -2,8 +2,8 @@
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { useUserStore } from '@/utils/stores/userStore';
-import RecentFinesTable from '@/components/RecentFinesTable';
 import Navbar from '@/components/Navbar';
+import LeaderBoardTable from '@/components/LeaderBoardTable';
 import Footer from '@/components/Footer';
 
 export default function Index() {
@@ -20,7 +20,7 @@ export default function Index() {
       <Navbar />
       <div className='animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-[100%] px-3'>
         <div className='text-center'>
-          <RecentFinesTable />
+          <LeaderBoardTable />
         </div>
       </div>
 

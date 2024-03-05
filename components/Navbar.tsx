@@ -9,6 +9,7 @@ export default function Navbar() {
         {/* <AuthButton /> */}
         <Link href='/fines'>Submit Fine</Link>
         <Link href='/recent'>Recent Fines</Link>
+        <Link href='/leaderboard'>Leaderboard</Link>
         </div>
     </nav>
     )
