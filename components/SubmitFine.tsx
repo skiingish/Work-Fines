@@ -50,16 +50,6 @@ const ACCEPTED_MEDIA_TYPES = [
   'image/webp',
 ];
 
-const formSchema = z.object({
-  reported_by: z.string({ required_error: 'Please select a staff member.' }),
-  who: z.string({ required_error: 'Please select a staff member.' }),
-  what: z.string({ required_error: 'Please select a fine.' }),
-  penalty_amount: z.coerce.number().min(1, {
-    message: 'name must be at least 2 characters.',
-  }),
-  media: z.instanceof(FileList).optional(),
-});
-
 //media: z.custom<File>(),
 //   media: z
 //     .any()
@@ -71,6 +61,16 @@ const formSchema = z.object({
 //     ),
 
 export default function SubmitFine() {
+  const formSchema = z.object({
+    reported_by: z.string({ required_error: 'Please select a staff member.' }),
+    who: z.string({ required_error: 'Please select a staff member.' }),
+    what: z.string({ required_error: 'Please select a fine.' }),
+    penalty_amount: z.coerce.number().min(1, {
+      message: 'name must be at least 2 characters.',
+    }),
+    media: z.instanceof(FileList).optional(),
+  });
+
   const router = useRouter();
   const supabase = createClient();
   const user = useUserStore((state) => state.user);
