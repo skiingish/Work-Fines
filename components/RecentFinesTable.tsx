@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { createClient } from '@/utils/supabase/client';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
+import { useUserStore } from '../utils/stores/userStore';
 
 const supabaseMediaUrlBuilder = (bucket: string, filename: string) => {
   const supbaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,6 +21,7 @@ const supabaseMediaUrlBuilder = (bucket: string, filename: string) => {
 
 export default function RecentFinesTable() {
   const supabase = createClient();
+  const user = useUserStore((state) => state.user);
 
   const [finesData, setFinesData] = useState<Fine[]>([]);
 
@@ -42,6 +44,7 @@ export default function RecentFinesTable() {
             staff!public_fines_reported_by_fkey ( name )
           `
         )
+        .eq('organisation_id', user?.organisation)
         .order('created_at', { ascending: false });
       console.log(fines);
       if (error) {

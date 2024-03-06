@@ -3,7 +3,7 @@ type BasicUser = {
     created_at: string;
     name: string;
     pin: string;
-    account_privilege_level: string;
+    account_privilege_level: number;
     organisation: number;
 };
 

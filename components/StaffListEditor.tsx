@@ -10,16 +10,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+
 import { createClient } from '@/utils/supabase/client';
 import { Input } from './ui/input';
 import { useUserStore } from '../utils/stores/userStore';
+import { AddEditStaffSheet } from './AddEditStaffSheet';
 
-export default function LeaderBoardTable() {
+export default function StaffListEditor() {
   const supabase = createClient();
   const user = useUserStore((state) => state.user);
 
   const [staffData, setStaffData] = useState<Staff[]>([]);
   const [filteredStaff, setFilteredStaff] = useState<Staff[]>(staffData);
+
+  // TODO this doesn't seam to refresh the list when a new staff member is added
+  const updateStaffList = (staff: Staff) => {
+    setStaffData([...staffData, staff]);
+    setFilteredStaff([...staffData, staff]);
+  };
 
   useEffect(() => {
     const fetchFines = async () => {
@@ -51,17 +67,12 @@ export default function LeaderBoardTable() {
       });
 
       // then order the staff members by the fines outstanding in descending order
-      staff.sort((a: Staff, b: Staff) => {
-        if (
-          a.fines_outstanding !== undefined &&
-          b.fines_outstanding !== undefined
-        ) {
-          return b.fines_outstanding - a.fines_outstanding;
-        }
-        return 0;
-      });
 
-      console.log(staff);
+      // Then order the staff members by their last name in ascending order
+      staff.sort((a: Staff, b: Staff) => {
+        // if we can split the name into two parts, then we can compare the last names
+        return a.name.localeCompare(b.name);
+      });
 
       // staff.sort((a: Staff, b: Staff) => {
       //     if (a.fines_outstanding && b.fines_outstanding) {
@@ -78,8 +89,9 @@ export default function LeaderBoardTable() {
 
   return (
     <div>
-      <h2 className='w-full mb-4'>Leaderboard</h2>
+      <h2 className='w-full mb-4'>Staff List</h2>
       {/* Search box */}
+
       <Input
         type='search'
         className='w-full mb-4'
@@ -92,6 +104,10 @@ export default function LeaderBoardTable() {
           setFilteredStaff(filteredStaffList);
         }}
       />
+      {/* Add New Staff Member */}
+      <div className='flex justify-center mb-6'>
+        <AddEditStaffSheet user={user} updateStaffList={updateStaffList} />
+      </div>
       <Table>
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
@@ -105,7 +121,11 @@ export default function LeaderBoardTable() {
         <TableBody>
           {filteredStaff.map((staff: Staff) => {
             return (
-              <TableRow key={staff.id}>
+              <TableRow
+                className='hover:cursor-pointer'
+                key={staff.id}
+                onClick={() => console.log(staff)}
+              >
                 <TableCell>{staff.name}</TableCell>
                 <TableCell>{staff.fines_owed - staff.fines_paid}</TableCell>
                 <TableCell>{staff.fines_owed}</TableCell>
