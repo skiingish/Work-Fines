@@ -27,9 +27,10 @@ export async function loginPin(data: any) {
     }
 
     if (!user || user.length === 0) {
+      console.log(`no user found ${hashedPin}`)
       return {
         status: "error",
-        message: `Invalid pin entered ${hashedPin}`,
+        message: `Invalid pin entered`,
       };
     } 
     

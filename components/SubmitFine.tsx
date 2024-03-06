@@ -299,7 +299,11 @@ export default function SubmitFine() {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className='p-0'>
+                  <PopoverContent
+                    className='p-0'
+                    side='bottom'
+                    avoidCollisions={false}
+                  >
                     <Command>
                       <CommandInput
                         placeholder='Search Staff'
@@ -362,7 +366,11 @@ export default function SubmitFine() {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className=' p-0'>
+                  <PopoverContent
+                    className='p-0'
+                    side='bottom'
+                    avoidCollisions={false}
+                  >
                     <Command>
                       <CommandInput
                         placeholder='Search Staff'
@@ -425,7 +433,11 @@ export default function SubmitFine() {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className='p-0'>
+                  <PopoverContent
+                    className='p-0'
+                    side='bottom'
+                    avoidCollisions={false}
+                  >
                     <Command>
                       <CommandInput
                         placeholder='Search fines'
