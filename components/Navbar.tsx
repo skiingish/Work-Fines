@@ -12,8 +12,8 @@ export default function Navbar() {
         <div className='w-full max-w-4xl flex justify-between items-center p-3 text-sm'>
           <ModeToggle />
           {/* <AuthButton /> */}
-          <Link href='/fines'>Submit Fine</Link>
-          <Link href='/recent'>Recent Fines</Link>
+          <Link href='/fines'>Submit</Link>
+          <Link href='/recent'>Recent</Link>
           <Link href='/leaderboard'>Leaderboard</Link>
           <Link href='/staff'>Staff</Link>
           <Link href='/fine-types'>Fine Types</Link>
