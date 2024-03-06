@@ -39,8 +39,8 @@ export default function StaffListEditor() {
 
   useEffect(() => {
     const fetchFines = async () => {
-      // fetch fines from supabase and join the matching staff members from the staff table
-      const { data: staff, error } = await supabase
+      // Fetch staff from supabase that haven't ever been deleted
+      let { data: staff, error } = await supabase
         .from('staff')
         .select(
           `
@@ -49,6 +49,7 @@ export default function StaffListEditor() {
         )
         .eq('organisation', user?.organisation)
         .order('created_at', { ascending: false });
+
       console.log(staff);
       if (error) {
         console.log('error', error);
@@ -59,6 +60,11 @@ export default function StaffListEditor() {
         console.log('no fines');
         return;
       }
+
+      // remove any staff members that have been deleted
+      staff = staff.filter((staffMember: Staff) => {
+        return staffMember.deleted === false;
+      });
 
       // for each staff member, calculate the total fines outstanding
       staff.forEach((staffMember: Staff) => {
@@ -73,13 +79,6 @@ export default function StaffListEditor() {
         // if we can split the name into two parts, then we can compare the last names
         return a.name.localeCompare(b.name);
       });
-
-      // staff.sort((a: Staff, b: Staff) => {
-      //     if (a.fines_outstanding && b.fines_outstanding) {
-      //         return b.fines_outstanding - a.fines_outstanding;
-      //     }
-      //     return 0;
-      // });
 
       setStaffData(staff);
       setFilteredStaff(staff);

@@ -112,7 +112,7 @@ export default function SubmitFine() {
 
   useEffect(() => {
     async function fetchStaff() {
-      const { data: staff, error } = await supabase
+      let { data: staff, error } = await supabase
         .from('staff')
         .select('*')
         .eq('organisation', user?.organisation);
@@ -126,6 +126,11 @@ export default function SubmitFine() {
         console.log('No staff found');
         return;
       }
+
+      // remove any staff members that have been deleted
+      staff = staff.filter((staffMember: Staff) => {
+        return staffMember.deleted === false;
+      });
 
       // remap to match id => value, name => label
       staff.forEach((s) => {

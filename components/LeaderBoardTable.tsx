@@ -24,7 +24,7 @@ export default function LeaderBoardTable() {
   useEffect(() => {
     const fetchFines = async () => {
       // fetch fines from supabase and join the matching staff members from the staff table
-      const { data: staff, error } = await supabase
+      let { data: staff, error } = await supabase
         .from('staff')
         .select(
           `
@@ -43,6 +43,10 @@ export default function LeaderBoardTable() {
         console.log('no fines');
         return;
       }
+
+      staff = staff.filter((staffMember: Staff) => {
+        return staffMember.deleted === false;
+      });
 
       // for each staff member, calculate the total fines outstanding
       staff.forEach((staffMember: Staff) => {

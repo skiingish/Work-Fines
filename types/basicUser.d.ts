@@ -28,4 +28,6 @@ type Staff = {
     fines_paid: number;
     fines_outstanding?: number;
     organisation: number;
+    deleted_at?: Date;
+    deleted: false;
 };
