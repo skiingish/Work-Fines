@@ -10,14 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 
 import { createClient } from '@/utils/supabase/client';
 import { Input } from './ui/input';
@@ -30,6 +22,15 @@ export default function StaffListEditor() {
 
   const [staffData, setStaffData] = useState<Staff[]>([]);
   const [filteredStaff, setFilteredStaff] = useState<Staff[]>(staffData);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedStaffMember, setSelectedStaffMember] = useState<Staff | null>(
+    null
+  );
+
+  const selectStaffMember = (staff: Staff) => {
+    setSelectedStaffMember(staff);
+    setSheetOpen(true);
+  };
 
   // TODO this doesn't seam to refresh the list when a new staff member is added
   const updateStaffList = (staff: Staff) => {
@@ -50,7 +51,7 @@ export default function StaffListEditor() {
         .eq('organisation', user?.organisation)
         .order('created_at', { ascending: false });
 
-      console.log(staff);
+      // console.log(staff);
       if (error) {
         console.log('error', error);
         return;
@@ -106,6 +107,14 @@ export default function StaffListEditor() {
       {/* Add New Staff Member */}
       <div className='flex justify-center mb-6'>
         <AddEditStaffSheet user={user} updateStaffList={updateStaffList} />
+        <AddEditStaffSheet
+          isEdit={true}
+          user={user}
+          updateStaffList={updateStaffList}
+          staffmember={selectedStaffMember}
+          sheetOpen={sheetOpen}
+          setSheetOpen={setSheetOpen}
+        />
       </div>
       <Table>
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -120,15 +129,17 @@ export default function StaffListEditor() {
         <TableBody>
           {filteredStaff.map((staff: Staff) => {
             return (
-              <TableRow
-                className='hover:cursor-pointer'
-                key={staff.id}
-                onClick={() => console.log(staff)}
-              >
-                <TableCell>{staff.name}</TableCell>
-                <TableCell>{staff.fines_owed - staff.fines_paid}</TableCell>
-                <TableCell>{staff.fines_owed}</TableCell>
-              </TableRow>
+              <>
+                <TableRow
+                  className='hover:cursor-pointer'
+                  key={staff.id}
+                  onClick={() => selectStaffMember(staff)}
+                >
+                  <TableCell>{staff.name}</TableCell>
+                  <TableCell>{staff.fines_owed - staff.fines_paid}</TableCell>
+                  <TableCell>{staff.fines_owed}</TableCell>
+                </TableRow>
+              </>
             );
           })}
         </TableBody>
