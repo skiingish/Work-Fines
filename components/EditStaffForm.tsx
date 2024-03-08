@@ -37,14 +37,16 @@ export const EditStaffForm: FC<EditStaffFormProps> = ({
 }) => {
   const formSchema = z.object({
     name: z.string({ required_error: 'Please enter a name' }),
-    fines_outstanding: z.number({ required_error: 'Please enter a number' }),
+    fines_paid: z.coerce.number().min(0, {
+      message: 'Must be a positive number',
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: staffMember.name,
-      fines_outstanding: staffMember.fines_outstanding,
+      fines_paid: staffMember.fines_paid,
     },
   });
 
@@ -54,37 +56,49 @@ export const EditStaffForm: FC<EditStaffFormProps> = ({
     try {
       toast.info('Saving staff member');
 
-      const newFinesOutstanding = data.fines_outstanding;
-      let newFinesOwed = staffMember.fines_owed;
-      let newTotalFines = staffMember.fines_owed - staffMember.fines_paid;
-      let newFinesPaid = staffMember.fines_paid;
+      // console.log('outstanding' + data.fines_outstanding);
 
-      // if fines have increased, update the fines_owed and total fines
-      if (newFinesOutstanding > staffMember.fines_owed) {
-        newFinesOwed =
-          staffMember.fines_owed +
-          (newFinesOutstanding - staffMember.fines_owed);
-        newTotalFines = newFinesOwed - staffMember.fines_paid;
-      } else if (newFinesOutstanding < staffMember.fines_owed) {
-        newFinesOwed =
-          staffMember.fines_owed -
-          (staffMember.fines_owed - newFinesOutstanding);
-        newTotalFines = newFinesOwed - staffMember.fines_paid;
-      } else {
-        newFinesPaid =
-          staffMember.fines_paid + (staffMember.fines_owed - newFinesOwed);
-      }
+      // // give me the difference between the new fines_outstanding and the old fines_outstanding
+      // const diff =
+      //   data.fines_outstanding -
+      //   staffMember.fines_owed -
+      //   staffMember.fines_paid;
+      // console.log('diff ' + diff);
 
-      const updateStaff = {
+      // let newFinesPaid = staffMember.fines_paid;
+
+      // // if we're reducing then increase fines_paid
+      // if (diff < 0) {
+      //   newFinesPaid = staffMember.fines_paid + Math.abs(diff);
+      // } else if (diff > 0) {
+      //   // if we're increasing then decrease fines_paid
+
+      //   // if this staff member is going to run into negative fines_paid then we need increase fines_owed
+      //   if (staffMember.fines_paid - diff < 0) {
+      //     newFinesPaid = 0;
+      //     staffMember.fines_owed = staffMember.fines_owed + Math.abs(diff);
+      //   } else {
+      //     newFinesPaid = staffMember.fines_paid - diff;
+      //   }
+      // }
+
+      // console.log('newFinesPaid ' + newFinesPaid);
+      // console.log('newFinesOwed ' + staffMember.fines_owed);
+
+      console.log(staffMember.fines_paid);
+
+      // Create an updated staff object
+      const updatedStaff = {
         ...staffMember,
-        name: data.name,
-        fines_owed: newFinesOwed,
-        fines_paid: staffMember.fines_paid,
+        fines_owed: staffMember.fines_owed,
+        fines_paid: data.fines_paid,
       };
+
+      console.log(updatedStaff);
 
       const { status, data: updatedStaffMember } = await editStaff(
         user,
-        updateStaff
+        updatedStaff
       );
 
       if (status === 'success' && updatedStaffMember?.length === 1) {
@@ -100,24 +114,24 @@ export const EditStaffForm: FC<EditStaffFormProps> = ({
     } catch (error) {}
   }
 
-  async function onDelete() {
+  async function onDelete(staff: Staff) {
     try {
       toast.info('Deleting staff member');
-      // const { status, data: updatedStaffMember } = await createStaff(user, {
-      //   ...staffMember,
-      //   deleted: true,
-      // });
+      const { status, data: updatedStaffMember } = await deleteStaff(
+        user,
+        staff
+      );
 
-      // if (status === 'success' && updatedStaffMember?.length === 1) {
-      //   form.reset();
-      //   toast.success('Staff member deleted');
-      //   console.log(updatedStaffMember);
+      if (status === 'success' && updatedStaffMember?.length === 1) {
+        form.reset();
+        toast.success('Staff member deleted');
+        console.log(updatedStaffMember);
 
-      //   ///updateStaffList(updatedStaffMember[0]);
-      //   setSheetOpen && setSheetOpen(false);
-      // } else {
-      //   toast.error('Error deleting staff member');
-      // }
+        ///updateStaffList(updatedStaffMember[0]);
+        setSheetOpen && setSheetOpen(false);
+      } else {
+        toast.error('Error deleting staff member');
+      }
     } catch (error) {}
   }
 
@@ -141,15 +155,15 @@ export const EditStaffForm: FC<EditStaffFormProps> = ({
           />
           <FormField
             control={form.control}
-            name='fines_outstanding'
+            name='fines_paid'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fines Outstanding</FormLabel>
+                <FormLabel>Fines Paid</FormLabel>
                 <FormControl>
                   <Input type='number' placeholder='' {...field} />
                 </FormControl>
                 <FormDescription>
-                  How Many Fines Are They Yet To Pay Off?
+                  How Many Fines Have They Paid Off?
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -174,7 +188,7 @@ export const EditStaffForm: FC<EditStaffFormProps> = ({
                   <p className='font-semibold'>{staffMember.name}</p>
                   <Button
                     className='bg-red-500 text-white hover:bg-red-800'
-                    onClick={onDelete}
+                    onClick={() => onDelete(staffMember)}
                   >
                     Confirm Delete
                   </Button>
